@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { 
-  FiHome, FiSettings, FiLogOut, FiMenu, FiX, FiPackage, 
+  FiHome, FiLogOut, FiMenu, FiX, FiPackage, 
   FiUsers, FiTool, FiFileText, FiBarChart2, FiUser 
 } from 'react-icons/fi';
 import useAuthStore from '../store/authStore';
@@ -22,19 +22,9 @@ const Layout = ({ children }) => {
     { path: '/reports', icon: FiFileText, label: 'Reports' },
   ];
 
-  if (user?.role === 'Owner') {
-    menuItems.push({ path: '/users', icon: FiUser, label: 'Users' });
-  }
-
-  // Add Profile menu item before Users
-  const profileIndex = menuItems.findIndex(item => item.path === '/users');
-  const profileItem = { path: '/profile', icon: FiSettings, label: 'Profile' };
   
-  if (profileIndex !== -1) {
-    menuItems.splice(profileIndex, 0, profileItem);
-  } else {
-    menuItems.push(profileItem);
-  }
+
+  
 
   const handleLogout = () => {
     logout();
@@ -101,15 +91,7 @@ const Layout = ({ children }) => {
               {menuItems.find(item => item.path === location.pathname)?.label || 'Dashboard'}
             </h2>
           </div>
-          <Link to="/profile" className="flex items-center gap-4 hover:opacity-80 transition-opacity">
-            <div className="text-right">
-              <p className="text-sm font-medium text-gray-900">{user?.name}</p>
-              <p className="text-xs text-gray-500">{user?.role}</p>
-            </div>
-            <div className="w-10 h-10 rounded-full bg-primary-500 flex items-center justify-center text-white font-bold">
-              {user?.name?.charAt(0).toUpperCase()}
-            </div>
-          </Link>
+         
         </header>
 
         {/* Page Content */}

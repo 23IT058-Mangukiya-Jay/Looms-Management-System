@@ -6,7 +6,6 @@ import errorHandler from './middleware/errorHandler.js';
 
 // Import routes
 import authRoutes from './routes/auth.routes.js';
-import userRoutes from './routes/user.routes.js';
 import machineRoutes from './routes/machine.routes.js';
 import workerRoutes from './routes/worker.routes.js';
 import takaRoutes from './routes/taka.routes.js';
@@ -39,7 +38,6 @@ connectDB();
 
 // Routes
 app.use('/api/auth', authRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/machines', machineRoutes);
 app.use('/api/workers', workerRoutes);
 app.use('/api/takas', takaRoutes);
