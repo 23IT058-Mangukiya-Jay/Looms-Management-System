@@ -70,16 +70,17 @@ export default function Reports() {
 
   const exportPDF = async () => {
     try {
-      const response = await api.get('/reports/export-pdf', {
-        params: {
-          type: reportType,
-          startDate: dateRange.startDate,
-          endDate: dateRange.endDate
-        },
+      // Send report data to server which generates PDF and streams it back
+      const payload = {
+        reportType: reportData.type || reportType,
+        data: reportData.data || []
+      };
+
+      const response = await api.post('/reports/pdf', payload, {
         responseType: 'blob'
       });
 
-      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: 'application/pdf' }));
       const link = document.createElement('a');
       link.href = url;
       link.setAttribute('download', `${reportType}-report-${dateRange.startDate}-to-${dateRange.endDate}.pdf`);
@@ -88,7 +89,8 @@ export default function Reports() {
       link.remove();
       toast.success('PDF downloaded successfully');
     } catch (error) {
-      toast.error('Failed to export PDF');
+      console.error('PDF export error:', error);
+      toast.error(error.response?.data?.message || 'Failed to export PDF');
     }
   };
 
@@ -131,7 +133,6 @@ export default function Reports() {
               <option value="worker">Worker Production Report</option>
               <option value="machine">Machine Production Report</option>
               <option value="salary">Salary Report</option>
-              <option value="quality">Quality Analysis Report</option>
             </select>
           </div>
           <div>
@@ -451,50 +452,7 @@ export default function Reports() {
           )}
 
           {/* Quality Analysis Report */}
-          {reportType === 'quality' && reportData.data && (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Quality Type
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Rate/Meter
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Productions
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Total Meters
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Percentage
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-700 uppercase">
-                      Total Value
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {reportData.data.map((item, index) => (
-                    <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4">
-                        <div className="font-medium text-gray-900">{item.quality?.name}</div>
-                      </td>
-                      <td className="px-6 py-4 text-sm">₹{item.quality?.ratePerMeter}</td>
-                      <td className="px-6 py-4 text-sm font-medium">{item.count}</td>
-                      <td className="px-6 py-4 text-sm font-semibold">{item.totalMeters?.toFixed(2)}</td>
-                      <td className="px-6 py-4 text-sm">{item.percentage?.toFixed(1)}%</td>
-                      <td className="px-6 py-4 text-sm font-bold text-green-600">
-                        ₹{item.totalValue?.toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+          
         </div>
       )}
 

@@ -18,13 +18,13 @@ async function createUser() {
   try {
     // Connect to MongoDB
     await mongoose.connect(process.env.MONGO_URI || 'mongodb://localhost:27017/looms');
-    console.log('✅ Connected to MongoDB');
+    console.log('Connected to MongoDB');
 
     // Check if user already exists
     const existingUser = await User.findOne({ email: 'tirthgoyani123@gmail.com' });
     
     if (existingUser) {
-      console.log('⚠️  User already exists. Updating password...');
+      console.log('User already exists. Updating password...');
       
       // Hash the new password
       const salt = await bcrypt.genSalt(10);
@@ -36,7 +36,7 @@ async function createUser() {
       existingUser.role = 'owner';
       await existingUser.save();
       
-      console.log('✅ User updated successfully!');
+      console.log('User updated successfully!');
     } else {
       console.log('Creating new user...');
       
@@ -53,12 +53,12 @@ async function createUser() {
       });
 
       await newUser.save();
-      console.log('✅ User created successfully!');
+      console.log('User created successfully!');
     }
 
-    console.log('\n📧 Email: tirthgoyani123@gmail.com');
-    console.log('🔑 Password: tillu3888');
-    console.log('👤 Role: owner\n');
+    console.log('\n Email: tirthgoyani123@gmail.com');
+    console.log('\Password: tillu3888');
+    console.log('Role: owner\n');
 
     process.exit(0);
   } catch (error) {

@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import api from '../utils/api';
 import toast from 'react-hot-toast';
 import { 
-  FaPlus, FaEdit, FaTrash, FaHistory, FaCog, FaSearch, 
+  FaPlus, FaEdit, FaTrash, FaCog, FaSearch, 
   FaTimes, FaCheckCircle, FaExclamationCircle, FaChartLine,
   FaUsers, FaFilter, FaSort
 } from 'react-icons/fa';
@@ -13,9 +13,7 @@ export default function Machines() {
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [showHistoryModal, setShowHistoryModal] = useState(false);
   const [selectedMachine, setSelectedMachine] = useState(null);
-  const [productionHistory, setProductionHistory] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [statusFilter, setStatusFilter] = useState('all');
   const [selectedMachines, setSelectedMachines] = useState([]);
@@ -116,18 +114,6 @@ export default function Machines() {
     }
   };
 
-  const viewProductionHistory = async (machine) => {
-    setSelectedMachine(machine);
-    setShowHistoryModal(true);
-    try {
-      const response = await api.get(`/machines/${machine._id}/production-history`);
-      const historyData = response.data?.data || response.data;
-      setProductionHistory(Array.isArray(historyData) ? historyData : []);
-    } catch (error) {
-      toast.error('Failed to fetch production history');
-      setProductionHistory([]);
-    }
-  };
 
   const resetForm = () => {
     setFormData({
@@ -423,13 +409,7 @@ export default function Machines() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-2">
-                      <button
-                        onClick={() => viewProductionHistory(machine)}
-                        className="text-blue-600 hover:text-blue-800 p-2"
-                        title="View History"
-                      >
-                        <FaHistory />
-                      </button>
+                      
                       <button
                         onClick={() => openEditModal(machine)}
                         className="text-green-600 hover:text-green-800 p-2"
@@ -559,80 +539,7 @@ export default function Machines() {
         </div>
       )}
 
-      {/* Production History Modal */}
-      {showHistoryModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-4xl max-h-[80vh] overflow-y-auto">
-            <h2 className="text-2xl font-bold mb-4">
-              Production History - {selectedMachine?.name}
-            </h2>
-            {productionHistory.length === 0 ? (
-              <p className="text-gray-500 text-center py-8">No production history available</p>
-            ) : (
-              <div className="space-y-4">
-                <div className="grid grid-cols-3 gap-4 mb-4">
-                  <div className="bg-blue-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Total Productions</p>
-                    <p className="text-2xl font-bold text-blue-600">{productionHistory.length}</p>
-                  </div>
-                  <div className="bg-green-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Total Meters</p>
-                    <p className="text-2xl font-bold text-green-600">
-                      {productionHistory.reduce((sum, p) => sum + p.meters, 0).toFixed(2)}
-                    </p>
-                  </div>
-                  <div className="bg-purple-50 p-4 rounded-lg">
-                    <p className="text-sm text-gray-600">Total Earnings</p>
-                    <p className="text-2xl font-bold text-purple-600">
-                      ₹{productionHistory.reduce((sum, p) => sum + p.totalEarnings, 0).toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-                <table className="w-full">
-                  <thead className="bg-gray-50">
-                    <tr>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Date</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Worker</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Shift</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Meters</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Quality</th>
-                      <th className="px-4 py-2 text-left text-sm font-medium text-gray-700">Earnings</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {productionHistory.map((prod) => (
-                      <tr key={prod._id}>
-                        <td className="px-4 py-2 text-sm">
-                          {new Date(prod.date).toLocaleDateString()}
-                        </td>
-                        <td className="px-4 py-2 text-sm">{prod.worker?.name}</td>
-                        <td className="px-4 py-2 text-sm">
-                          <span className={`px-2 py-1 rounded text-xs ${
-                            prod.shift === 'day' ? 'bg-yellow-100 text-yellow-800' : 'bg-blue-100 text-blue-800'
-                          }`}>
-                            {prod.shift}
-                          </span>
-                        </td>
-                        <td className="px-4 py-2 text-sm font-medium">{prod.meters}</td>
-                        <td className="px-4 py-2 text-sm">{prod.taka?.quality?.name}</td>
-                        <td className="px-4 py-2 text-sm font-medium text-green-600">
-                          ₹{prod.totalEarnings.toFixed(2)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
-            <button
-              onClick={() => setShowHistoryModal(false)}
-              className="mt-4 w-full px-4 py-2 bg-gray-200 text-gray-800 rounded-lg hover:bg-gray-300"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+      
     </div>
   );
 }
