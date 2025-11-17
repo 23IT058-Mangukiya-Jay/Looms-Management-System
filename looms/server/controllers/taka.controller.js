@@ -41,7 +41,7 @@ export const getTakas = async (req, res) => {
           {
             $group: {
               _id: null,
-              totalMeters: { $sum: '$meters' },
+              totalMeters: { $sum: '$metersProduced' },
               totalEarnings: { $sum: '$earnings' }
             }
           }
